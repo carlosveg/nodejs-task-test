@@ -7,7 +7,7 @@ app.use(cors())
 app.use(express.json())
 
 // test route
-app.get('/', (_req: Request, res: Response) =>
+app.get('/', (_, res: Response) =>
   res.status(200).send({ message: 'App is up and running' })
 )
 
