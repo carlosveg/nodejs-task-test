@@ -82,6 +82,36 @@ export const deleteColumn = async (req: Request, res: Response) => {
     if (!col) {
       res.status(404).json({ error: 'not found' })
     }
+
+    if (col.isDefault) {
+      return res.status(400).json({
+        error: 'Default columns cannot be deleted'
+      })
+    }
+
+    const todo = await prisma.column.findFirst({
+      where: {
+        userId: col.userId,
+        name: 'TODO'
+      }
+    })
+
+    if (!todo) {
+      return res.status(500).json({ error: 'TODO column is missing' })
+    }
+
+    await prisma.$transaction([
+      prisma.task.updateMany({
+        where: { columnId: id },
+        data: {
+          columnId: todo.id
+        }
+      })
+    ])
+
+    res
+      .status(204)
+      .json({ message: `Columns of ${col.name} are moved to TODO column` })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Internal Server Error' })
