@@ -21,6 +21,32 @@ export const listColumns = async (req: Request, res: Response) => {
 
 export const createColumn = async (req: Request, res: Response) => {
   try {
+    const { userId, name } = req.body
+
+    if (!userId || !name)
+      return res.status(400).json({ error: 'userId and name are required' })
+
+    const existsExtraColumn = await prisma.column.count({
+      where: { userId, isDefault: false }
+    })
+
+    if (existsExtraColumn >= 2)
+      return res.status(400).json({ error: 'Only 2 custom columns allowed' })
+
+    const maxPosition = await prisma.column.aggregate({
+      where: { userId },
+      _max: { position: true }
+    })
+
+    const column = await prisma.column.create({
+      data: {
+        userId,
+        name,
+        position: (maxPosition._max.position ?? -1) + 1
+      }
+    })
+
+    res.status(201).json(column)
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Internal Server Error' })
@@ -37,6 +63,14 @@ export const updateColumn = async (req: Request, res: Response) => {
     })
 
     res.json(column)
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const deleteColumn = async (req: Request, res: Response) => {
+  try {
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Internal Server Error' })
