@@ -1,6 +1,6 @@
 import express, { Express, Response, Request } from 'express'
 import cors from 'cors'
-import { testController } from './controllers'
+import { columnController, testController } from './controllers'
 import prisma from './config/prisma.config'
 
 const app: Express = express()
@@ -10,6 +10,7 @@ app.use(express.json())
 
 // routes
 app.use('/health-check', testController)
+app.use('/columns', columnController)
 
 async function startServer() {
   try {

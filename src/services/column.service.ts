@@ -71,6 +71,43 @@ export const updateColumn = async (req: Request, res: Response) => {
 
 export const deleteColumn = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params
+
+    if (!id) {
+      res.status(400).json({ error: 'column id is required' })
+    }
+
+    const col = await prisma.column.findUnique({ where: { id } })
+
+    if (!col) {
+      res.status(404).json({ error: 'not found' })
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const reorder = async (req: Request, res: Response) => {
+  try {
+    const { orders } = req.body
+
+    if (!Array.isArray(orders)) {
+      return res.status(400).json({
+        error: 'orders must be an array and it is required'
+      })
+    }
+
+    await prisma.$transaction(
+      orders.map((o) => {
+        prisma.column.update({
+          where: { id: o.id },
+          data: { position: o.position }
+        })
+      })
+    )
+
+    res.status(204).json({ message: 'Order was successfuly updated' })
   } catch (error) {
     console.log(error)
     res.status(500).json({ error: 'Internal Server Error' })
