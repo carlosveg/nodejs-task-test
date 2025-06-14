@@ -38,7 +38,7 @@ model Task {
   description String?
   userId      String
   columnId    String
-  status      Boolean
+  status      Boolean @default(true)
   user        User    @relation(fields: [userId], references: [id])
   column      Column  @relation(fields: [columnId], references: [id])
 }

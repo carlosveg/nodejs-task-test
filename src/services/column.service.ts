@@ -17,6 +17,9 @@ export const listColumns = async (req: Request, res: Response) => {
             id: true,
             title: true,
             description: true
+          },
+          where: {
+            status: true
           }
         }
       }
