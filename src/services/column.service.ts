@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import prisma from '../config/prisma.config'
-import { error } from 'console'
 
 export const listColumns = async (req: Request, res: Response) => {
   try {

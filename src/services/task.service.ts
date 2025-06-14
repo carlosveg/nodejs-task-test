@@ -26,10 +26,6 @@ export const createTask = async (req: Request, res: Response) => {
   try {
     const { title, description, userId, columnId } = req.body
 
-    if (!title || !userId || !columnId) {
-      return res.status(400).json({ error: 'Some fields are missing' })
-    }
-
     const taks = await prisma.task.create({
       data: {
         title,
@@ -97,7 +93,7 @@ export const deleteTask = async (req: Request, res: Response) => {
       return res.status(404).json({ error: `task with id ${id} not found` })
     }
 
-    const taskd = await prisma.task.update({
+    await prisma.task.update({
       where: { id },
       data: { status: false }
     })
