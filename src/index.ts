@@ -1,7 +1,10 @@
-import express, { Express } from 'express'
 import cors from 'cors'
-import { columnController, taskController, testController } from './controllers'
+import express, { Express } from 'express'
 import prisma from './config/prisma.config'
+import { columnController, taskController, testController } from './controllers'
+import { resolvers } from './graphql/resolver'
+import { typeDefs } from './graphql/schema'
+import { ApolloServer } from 'apollo-server-express'
 
 const app: Express = express()
 
@@ -12,6 +15,20 @@ app.use(express.json())
 app.use('/health-check', testController)
 app.use('/columns', columnController)
 app.use('/tasks', taskController)
+
+async function startApolloServer() {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    introspection: true
+  })
+  await server.start()
+  server.applyMiddleware({ app })
+
+  console.log(`GraphQL listo en ${server.graphqlPath}`)
+}
+
+startApolloServer()
 
 async function startServer() {
   try {

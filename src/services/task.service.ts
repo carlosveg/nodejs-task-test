@@ -47,7 +47,7 @@ export const updateTask = async (req: Request, res: Response) => {
     const { id } = req.params
     let { title, description, columnId } = req.body
 
-    const task = await prisma.task.findUnique({ where: { id } })
+    const task = await prisma.task.findUnique({ where: { id, status: true } })
 
     if (!task) {
       return res.status(404).json({ error: `Task with id ${id} not found` })
@@ -83,7 +83,9 @@ export const deleteTask = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'id is required' })
     }
 
-    const task = await prisma.task.findUnique({ where: { id, userId } })
+    const task = await prisma.task.findUnique({
+      where: { id, userId, status: true }
+    })
 
     if (!task) {
       return res.status(404).json({ error: `task with id ${id} not found` })
