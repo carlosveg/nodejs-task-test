@@ -29,7 +29,7 @@ model Column {
   user      User    @relation(fields: [userId], references: [id])
   tasks     Task[]
 
-  @@unique([userId, position])
+  // @@unique([userId, position])
 }
 
 model Task {

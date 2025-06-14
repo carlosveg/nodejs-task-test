@@ -11,7 +11,7 @@ const router = Router()
 
 router.get('/', listColumns)
 router.post('/', createColumn)
-router.put('/:id', updateColumn)
+router.put('/', updateColumn)
 router.delete('/:id', deleteColumn)
 router.put('/reorder', reorder)
 

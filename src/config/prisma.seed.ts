@@ -1,21 +1,38 @@
-// prisma/seed.ts
 import { PrismaClient } from '@prisma/client'
-
 const prisma = new PrismaClient()
 
-async function main() {
-  await prisma.user.createMany({
-    data: [{ name: 'Charly' }, { name: 'Mariana' }],
-    skipDuplicates: true
+async function createUserWithDefaultColumns(name: string) {
+  const user = await prisma.user.create({
+    data: { name }
   })
-  console.log('🚀 Usuarios precargados con éxito')
+
+  const defaultColumns = [
+    { name: 'TODO', position: 0 },
+    { name: 'IN_PROGRESS', position: 1 },
+    { name: 'DONE', position: 2 }
+  ]
+
+  await prisma.column.createMany({
+    data: defaultColumns.map((col) => ({
+      ...col,
+      isDefault: true,
+      userId: user.id
+    }))
+  })
+
+  console.log(`Usuario "${name}" creado con columnas por defecto`)
+}
+
+async function main() {
+  const users = ['Carlos', 'Mariana', 'Alan']
+  for (const name of users) {
+    await createUserWithDefaultColumns(name)
+  }
 }
 
 main()
   .catch((e) => {
-    console.error(e)
+    console.error('Error durante seed:', e)
     process.exit(1)
   })
-  .finally(async () => {
-    await prisma.$disconnect()
-  })
+  .finally(() => prisma.$disconnect())
