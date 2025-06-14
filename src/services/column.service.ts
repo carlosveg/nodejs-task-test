@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import prisma from '../config/prisma.config'
-import { error } from 'console'
 
 export const listColumns = async (req: Request, res: Response) => {
   try {
@@ -17,6 +16,9 @@ export const listColumns = async (req: Request, res: Response) => {
             id: true,
             title: true,
             description: true
+          },
+          where: {
+            status: true
           }
         }
       }
@@ -32,9 +34,6 @@ export const listColumns = async (req: Request, res: Response) => {
 export const createColumn = async (req: Request, res: Response) => {
   try {
     const { userId, name } = req.body
-
-    if (!userId || !name)
-      return res.status(400).json({ error: 'userId and name are required' })
 
     const existsExtraColumn = await prisma.column.count({
       where: { userId, isDefault: false }
@@ -109,10 +108,6 @@ export const deleteColumn = async (req: Request, res: Response) => {
 
     if (!id) {
       res.status(400).json({ error: 'column id is required' })
-    }
-
-    if (!userId) {
-      res.status(400).json({ error: 'userId is required' })
     }
 
     const col = await prisma.column.findUnique({ where: { id, userId } })

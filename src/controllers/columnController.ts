@@ -1,4 +1,11 @@
 import { Router } from 'express'
+import { validateBody } from '../middlewares/validate'
+import {
+  createColumnSchema,
+  deleteColumnSchema,
+  reorderColumnsSchema,
+  updateColumnSchema
+} from '../schemas/columns.schema'
 import {
   createColumn,
   deleteColumn,
@@ -10,9 +17,9 @@ import {
 const router = Router()
 
 router.get('/', listColumns)
-router.post('/', createColumn)
-router.put('/', updateColumn)
-router.delete('/:id', deleteColumn)
-router.put('/reorder', reorder)
+router.post('/', validateBody(createColumnSchema), createColumn)
+router.put('/', validateBody(updateColumnSchema), updateColumn)
+router.delete('/:id', validateBody(deleteColumnSchema), deleteColumn)
+router.put('/reorder', validateBody(reorderColumnsSchema), reorder)
 
 export default router
