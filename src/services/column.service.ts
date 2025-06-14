@@ -113,7 +113,7 @@ export const deleteColumn = async (req: Request, res: Response) => {
     const col = await prisma.column.findUnique({ where: { id, userId } })
 
     if (!col) {
-      res.status(404).json({ error: 'not found' })
+      return res.status(404).json({ error: 'not found' })
     }
 
     if (col.isDefault) {
