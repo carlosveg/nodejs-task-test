@@ -47,10 +47,6 @@ export const updateTask = async (req: Request, res: Response) => {
     const { id } = req.params
     let { title, description, columnId } = req.body
 
-    if (!columnId) {
-      return res.status(400).json({ error: 'columnId is required' })
-    }
-
     const task = await prisma.task.findUnique({ where: { id } })
 
     if (!task) {
